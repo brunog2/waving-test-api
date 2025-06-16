@@ -13,16 +13,34 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { FindAllCategoriesDto } from './dto/find-all-categories.dto';
 import { FindAllCategoriesWithProductsDto } from './dto/find-all-categories-with-products.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 
+@ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @ApiOperation({ summary: 'Listar todas as categorias' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorias retornada com sucesso',
+  })
   @Get()
   async findAll(@Query() filters: FindAllCategoriesDto) {
     return this.categoriesService.findAll(filters);
   }
 
+  @ApiOperation({ summary: 'Listar categorias com seus produtos' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorias com seus produtos retornada com sucesso',
+  })
   @Get('with-products')
   async findAllWithProducts(
     @Query() filters: FindAllCategoriesWithProductsDto,
@@ -30,16 +48,53 @@ export class CategoriesController {
     return this.categoriesService.findAllWithProducts(filters);
   }
 
+  @ApiOperation({ summary: 'Buscar categoria por ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria encontrada com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada',
+  })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Criar nova categoria' })
+  @ApiResponse({
+    status: 201,
+    description: 'Categoria criada com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos',
+  })
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Atualizar categoria' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria atualizada com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada',
+  })
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -48,6 +103,20 @@ export class CategoriesController {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Remover categoria' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria removida com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada',
+  })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);

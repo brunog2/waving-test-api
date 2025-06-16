@@ -9,7 +9,6 @@ async function bootstrap() {
     .setTitle('WT - API Docs')
     .setDescription('Documentação da API WT')
     .setVersion('1.0')
-    .addTag('wt')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

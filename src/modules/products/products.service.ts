@@ -28,7 +28,9 @@ export class ProductsService {
     }
 
     // Configura a ordenação
-    const orderBy: Prisma.ProductOrderByWithRelationInput = {};
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      available: 'desc',
+    };
 
     switch (filters.sortBy) {
       case SortField.PRICE:

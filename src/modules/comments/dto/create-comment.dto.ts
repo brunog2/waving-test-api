@@ -11,12 +11,21 @@ import {
   IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCommentDto {
+  @ApiProperty({
+    description: 'ID do produto',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsUUID()
   @IsNotEmpty()
   productId: string;
 
+  @ApiProperty({
+    description: 'Conteúdo do comentário',
+    example: 'Produto muito bom, recomendo!',
+  })
   @IsString()
   @IsOptional()
   @MinLength(3, { message: 'O comentário deve ter pelo menos 3 caracteres' })

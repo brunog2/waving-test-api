@@ -8,19 +8,21 @@ import {
   Body,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { FindAllProductsDto } from './dto/find-all-products.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async findAll() {
-    return this.productsService.findAll();
+  async findAll(@Query() filters: FindAllProductsDto) {
+    return this.productsService.findAll(filters);
   }
 
   @Get(':id')

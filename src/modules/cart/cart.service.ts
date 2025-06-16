@@ -21,7 +21,10 @@ export class CartService {
         where: { userId },
         skip,
         take: limit,
-        include: {
+        select: {
+          id: true,
+          quantity: true,
+          createdAt: true,
           product: {
             select: {
               id: true,
@@ -41,7 +44,7 @@ export class CartService {
     const hasPreviousPage = page > 1;
 
     return {
-      items,
+      data: items,
       meta: {
         total,
         page,

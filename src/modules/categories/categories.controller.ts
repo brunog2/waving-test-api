@@ -13,6 +13,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { FindAllCategoriesDto } from './dto/find-all-categories.dto';
 import { FindAllCategoriesWithProductsDto } from './dto/find-all-categories-with-products.dto';
+import { CategorySimpleDto } from './dto/category-select.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -26,7 +27,7 @@ import {
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  @ApiOperation({ summary: 'Listar todas as categorias' })
+  @ApiOperation({ summary: 'Listar categorias' })
   @ApiResponse({
     status: 200,
     description: 'Lista de categorias retornada com sucesso',
@@ -34,6 +35,17 @@ export class CategoriesController {
   @Get()
   async findAll(@Query() filters: FindAllCategoriesDto) {
     return this.categoriesService.findAll(filters);
+  }
+
+  @ApiOperation({ summary: 'Listar todas as categorias' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorias retornada com sucesso',
+    type: [CategorySimpleDto],
+  })
+  @Get('all')
+  findAllSimple() {
+    return this.categoriesService.findAllSimple();
   }
 
   @ApiOperation({ summary: 'Listar categorias com seus produtos' })

@@ -158,6 +158,11 @@ export class CategoriesService {
               name: true,
               price: true,
               imageUrl: true,
+              comments: {
+                select: {
+                  rating: true,
+                },
+              },
             },
           },
         },
@@ -165,12 +170,31 @@ export class CategoriesService {
       this.prisma.category.count(),
     ]);
 
+    // Calculate average rating and total ratings for each product
+    const categoriesWithProductRatings = categories.map((category) => ({
+      ...category,
+      products: category.products.map((product) => {
+        const ratings = product.comments.map((comment) => comment.rating);
+        const averageRating =
+          ratings.length > 0
+            ? ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length
+            : 0;
+
+        const { comments, ...productWithoutComments } = product;
+        return {
+          ...productWithoutComments,
+          averageRating: Number(averageRating.toFixed(1)),
+          totalRatings: ratings.length,
+        };
+      }),
+    }));
+
     const totalPages = Math.ceil(total / limit);
     const hasNextPage = page < totalPages;
     const hasPreviousPage = page > 1;
 
     return {
-      data: categories,
+      data: categoriesWithProductRatings,
       meta: {
         total,
         page,
@@ -180,5 +204,19 @@ export class CategoriesService {
         hasPreviousPage,
       },
     };
+  }
+
+  async findAllSimple() {
+    const categories = await this.prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return categories;
   }
 }

@@ -479,3 +479,81 @@ export const generateProducts = (
 
   return products;
 };
+
+export const additionalUsers = [
+  {
+    email: 'john@example.com',
+    name: 'John Doe',
+    password: '123',
+    role: 'CUSTOMER',
+  },
+  {
+    email: 'jane@example.com',
+    name: 'Jane Smith',
+    password: '123',
+    role: 'CUSTOMER',
+  },
+  {
+    email: 'mike@example.com',
+    name: 'Mike Johnson',
+    password: '123',
+    role: 'CUSTOMER',
+  },
+  {
+    email: 'sarah@example.com',
+    name: 'Sarah Williams',
+    password: '123',
+    role: 'CUSTOMER',
+  },
+  {
+    email: 'david@example.com',
+    name: 'David Brown',
+    password: '123',
+    role: 'CUSTOMER',
+  },
+];
+
+export const generateComments = (productId: string, userId: string) => {
+  const comments = [
+    {
+      rating: 5,
+      content: 'Excelente produto! Superou minhas expectativas.',
+    },
+    {
+      rating: 4,
+      content: 'Muito bom produto, recomendo!',
+    },
+    {
+      rating: 3,
+      content: 'Produto bom, mas poderia ser melhor.',
+    },
+    {
+      rating: 2,
+      content: 'Não atendeu completamente minhas necessidades.',
+    },
+    {
+      rating: 1,
+      content: 'Não recomendo, produto com problemas.',
+    },
+  ];
+
+  // Randomly select 1-3 comments for each product-user combination
+  const numComments = Math.floor(Math.random() * 3) + 1;
+  const selectedComments: Array<{
+    rating: number;
+    content: string;
+    productId: string;
+    userId: string;
+  }> = [];
+
+  for (let i = 0; i < numComments; i++) {
+    const randomComment = comments[Math.floor(Math.random() * comments.length)];
+    selectedComments.push({
+      ...randomComment,
+      productId,
+      userId,
+    });
+  }
+
+  return selectedComments;
+};

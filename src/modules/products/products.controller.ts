@@ -6,8 +6,13 @@ import {
   Delete,
   Param,
   Body,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -23,18 +28,31 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() createDto: any) {
+  async create(@Request() req: AuthenticatedRequest, @Body() createDto: any) {
+    // Agora você tem acesso ao usuário autenticado via req.user
+    console.log('User authenticated:', req.user);
     return this.productsService.create(createDto);
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateDto: any) {
+  async update(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() updateDto: any,
+  ) {
+    // Agora você tem acesso ao usuário autenticado via req.user
+    console.log('User authenticated:', req.user);
     return this.productsService.update(id, updateDto);
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
+    // Agora você tem acesso ao usuário autenticado via req.user
+    console.log('User authenticated:', req.user);
     return this.productsService.remove(id);
   }
 }

@@ -1,5 +1,6 @@
 import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { categories, generateProducts } from './seed-data';
 
 const prisma = new PrismaClient();
 
@@ -28,7 +29,29 @@ async function main() {
     },
   });
 
-  console.log({ admin, customer });
+  // Create categories
+  for (const category of categories) {
+    await prisma.category.upsert({
+      where: { name: category.name },
+      update: {},
+      create: category,
+    });
+  }
+
+  // Get all categories
+  const allCategories = await prisma.category.findMany();
+
+  // Create products for each category
+  for (const category of allCategories) {
+    const products = generateProducts(category.id, category.name);
+    for (const product of products) {
+      await prisma.product.create({
+        data: product,
+      });
+    }
+  }
+
+  console.log('Seed completed successfully!');
 }
 
 main()

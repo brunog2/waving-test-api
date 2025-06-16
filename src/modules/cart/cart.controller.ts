@@ -14,6 +14,7 @@ import { CartService } from './cart.service';
 import { CartItemDto } from './dto/cart-item.dto';
 import { FindAllCartItemsDto } from './dto/find-all-cart-items.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CustomerGuard } from '../auth/guards/customer.guard';
 import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
 import {
   ApiTags,
@@ -26,7 +27,7 @@ import {
 
 @ApiTags('cart')
 @Controller('cart')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, CustomerGuard)
 @ApiBearerAuth()
 export class CartController {
   constructor(private readonly cartService: CartService) {}
@@ -51,6 +52,10 @@ export class CartController {
     description: 'Lista de itens retornada com sucesso',
   })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
   @Get()
   findAll(
     @Req() req: AuthenticatedRequest,
@@ -62,6 +67,10 @@ export class CartController {
   @ApiOperation({ summary: 'Adicionar item ao carrinho' })
   @ApiResponse({ status: 201, description: 'Item adicionado com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
   @ApiResponse({
     status: 404,
     description: 'Produto não encontrado ou não disponível',
@@ -79,6 +88,10 @@ export class CartController {
   })
   @ApiResponse({ status: 200, description: 'Item atualizado com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
   @ApiResponse({ status: 404, description: 'Item não encontrado no carrinho' })
   @Patch('items/:id')
   updateItem(
@@ -97,6 +110,10 @@ export class CartController {
   })
   @ApiResponse({ status: 200, description: 'Item removido com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
   @ApiResponse({ status: 404, description: 'Item não encontrado no carrinho' })
   @Delete('items/:id')
   removeItem(@Req() req: AuthenticatedRequest, @Param('id') id: string) {

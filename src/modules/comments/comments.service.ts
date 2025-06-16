@@ -14,31 +14,21 @@ export class CommentsService {
 
     const [comments, total] = await Promise.all([
       this.prisma.comment.findMany({
-        select: {
-          id: true,
-          rating: true,
-          content: true,
-          createdAt: true,
+        where: { productId },
+        skip,
+        take: limit,
+        include: {
           user: {
             select: {
+              id: true,
               name: true,
+              email: true,
             },
           },
         },
-        where: {
-          productId,
-        },
-        skip,
-        take: limit,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.comment.count({
-        where: {
-          productId,
-        },
-      }),
+      this.prisma.comment.count({ where: { productId } }),
     ]);
 
     const totalPages = Math.ceil(total / limit);
@@ -59,28 +49,18 @@ export class CommentsService {
   }
 
   async create(createCommentDto: CreateCommentDto, userId: string) {
-    const product = await this.prisma.product.findUnique({
+    const product = await this.prisma.product.findFirst({
       where: { id: createCommentDto.productId },
     });
-    console.log(userId);
+
     if (!product) {
-      throw new NotFoundException({
-        statusCode: 404,
-        message: 'Produto não encontrado',
-        error: 'Not Found',
-      });
+      throw new NotFoundException('Produto não encontrado');
     }
 
     return await this.prisma.comment.create({
       data: {
-        content: createCommentDto.content,
-        rating: createCommentDto.rating,
-        product: {
-          connect: { id: createCommentDto.productId },
-        },
-        user: {
-          connect: { id: userId },
-        },
+        ...createCommentDto,
+        userId,
       },
       include: {
         user: {
@@ -91,6 +71,20 @@ export class CommentsService {
           },
         },
       },
+    });
+  }
+
+  async remove(id: string, userId: string) {
+    const comment = await this.prisma.comment.findFirst({
+      where: { id, userId },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comentário não encontrado');
+    }
+
+    return await this.prisma.comment.delete({
+      where: { id },
     });
   }
 }

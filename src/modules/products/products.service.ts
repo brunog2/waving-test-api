@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, UseGuards, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -74,7 +74,7 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    return await this.prisma.product.findUnique({
+    return await this.prisma.product.findFirst({
       where: { id },
       include: {
         category: true,
@@ -94,6 +94,16 @@ export class ProductsService {
 
   @UseGuards(AdminGuard)
   async remove(id: string) {
-    // TODO: Implement remove product logic
+    const product = await this.prisma.product.findFirst({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    return await this.prisma.product.delete({
+      where: { id },
+    });
   }
 }

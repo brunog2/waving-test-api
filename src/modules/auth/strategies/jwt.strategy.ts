@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../interfaces/jwt.interface';
 import { UserInterface } from '../interfaces/user.interface';
 import { jwtConfig } from '../jwt-config';
+import { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,12 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<UserInterface> {
-    return {
-      createdAt: payload.createdAt,
-      name: payload.name,
-      id: payload.id,
-      email: payload.email,
-      role: payload.role,
-    };
+    return payload.user;
   }
 }

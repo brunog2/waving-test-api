@@ -38,7 +38,6 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    console.log('User authenticated:', req.user);
     return this.productsService.create(createProductDto);
   }
 

@@ -21,7 +21,8 @@ enum Role {
 enum OrderStatus {
   PENDING
   PROCESSING
-  COMPLETED
+  SHIPPED
+  DELIVERED
   CANCELLED
 }
 
@@ -32,6 +33,8 @@ model User {
   password   String
   role       Role          @default(CUSTOMER)
   createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?
   orders     Order[]
   comments   Comment[]
   cartItems  CartProduct[]
@@ -42,7 +45,11 @@ model User {
 model Category {
   id        String    @id @default(uuid())
   name      String    @unique
+  description String?
+  imageUrl  String?     @map("image_url")
   createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
   products  Product[]
 
   @@map("categories")
@@ -57,12 +64,15 @@ model Product {
   available   Boolean       @default(true)
   categoryId  String        @map("category_id")
   createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
   category    Category      @relation(fields: [categoryId], references: [id])
   orderItems  OrderProduct[]
   comments    Comment[]
   cartItems   CartProduct[]
 
   @@map("products")
+  @@index([categoryId])
 }
 
 model Order {
@@ -71,10 +81,13 @@ model Order {
   total      Decimal       @db.Decimal(10, 2)
   status     OrderStatus   @default(PENDING)
   createdAt  DateTime      @default(now()) @map("created_at")
-  user       User          @relation(fields: [userId], references: [id])
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   items      OrderProduct[]
 
   @@map("orders")
+  @@index([userId])
 }
 
 model OrderProduct {
@@ -83,10 +96,15 @@ model OrderProduct {
   productId String   @map("product_id")
   quantity  Int
   price     Decimal  @db.Decimal(10, 2)
-  order     Order    @relation(fields: [orderId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("order_products")
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Comment {
@@ -96,10 +114,14 @@ model Comment {
   rating    Int
   content   String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at")
-  product   Product  @relation(fields: [productId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
+  @@index([userId])
+  @@index([productId])
 }
 
 model CartProduct {
@@ -108,8 +130,12 @@ model CartProduct {
   productId String   @map("product_id")
   quantity  Int      @default(1)
   createdAt DateTime @default(now()) @map("created_at")
-  user      User     @relation(fields: [userId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("cart_products")
+  @@index([userId])
+  @@index([productId])
 }

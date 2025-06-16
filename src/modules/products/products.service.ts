@@ -60,18 +60,38 @@ export class ProductsService {
         take: limit,
         include: {
           category: true,
+          comments: {
+            select: {
+              rating: true,
+            },
+          },
         },
         orderBy,
       }),
       this.prisma.product.count({ where }),
     ]);
 
+    const productsWithRating = products.map((product) => {
+      const ratings = product.comments.map((comment) => comment.rating);
+      const averageRating =
+        ratings.length > 0
+          ? ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length
+          : 0;
+
+      const { comments, ...productWithoutComments } = product;
+      return {
+        ...productWithoutComments,
+        averageRating: Number(averageRating.toFixed(1)),
+        totalRatings: ratings.length,
+      };
+    });
+
     const totalPages = Math.ceil(total / limit);
     const hasNextPage = page < totalPages;
     const hasPreviousPage = page > 1;
 
     return {
-      data: products,
+      data: productsWithRating,
       meta: {
         total,
         page,
@@ -84,12 +104,34 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    return await this.prisma.product.findFirst({
+    const product = await this.prisma.product.findFirst({
       where: { id },
       include: {
         category: true,
+        comments: {
+          select: {
+            rating: true,
+          },
+        },
       },
     });
+
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const ratings = product.comments.map((comment) => comment.rating);
+    const averageRating =
+      ratings.length > 0
+        ? ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length
+        : 0;
+
+    const { comments, ...productWithoutComments } = product;
+    return {
+      ...productWithoutComments,
+      averageRating: Number(averageRating.toFixed(1)),
+      totalRatings: ratings.length,
+    };
   }
 
   @UseGuards(AdminGuard)

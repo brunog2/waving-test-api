@@ -20,4 +20,8 @@ export class UsersService {
   async remove(id: string) {
     // TODO: Implement remove user logic
   }
+
+  async findByEmail(email: string) {
+    return this.prisma.user.findFirst({ where: { email } });
+  }
 }

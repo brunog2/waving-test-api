@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
+import { CartItemDto } from './dto/cart-item.dto';
 
 @Controller('cart')
 export class CartController {
@@ -19,12 +20,15 @@ export class CartController {
   }
 
   @Post('items')
-  async addItem(@Body() addItemDto: any) {
+  async addItem(@Body() addItemDto: CartItemDto) {
     return this.cartService.addItem(addItemDto);
   }
 
   @Patch('items/:id')
-  async updateItem(@Param('id') id: string, @Body() updateItemDto: any) {
+  async updateItem(
+    @Param('id') id: string,
+    @Body() updateItemDto: CartItemDto,
+  ) {
     return this.cartService.updateItem(id, updateItemDto);
   }
 

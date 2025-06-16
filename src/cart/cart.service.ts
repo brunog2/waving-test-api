@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CartItemDto } from './dto/cart-item.dto';
 
 @Injectable()
 export class CartService {
@@ -9,11 +10,11 @@ export class CartService {
     // TODO: Implement find all cart items logic
   }
 
-  async addItem(addItemDto: any) {
+  async addItem(addItemDto: CartItemDto) {
     // TODO: Implement add item to cart logic
   }
 
-  async updateItem(id: string, updateItemDto: any) {
+  async updateItem(id: string, updateItemDto: CartItemDto) {
     // TODO: Implement update cart item logic
   }
 

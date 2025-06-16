@@ -22,6 +22,10 @@ export enum SortField {
 
 export class FindAllProductsDto {
   @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
   @IsUUID()
   categoryId?: string;
 
@@ -38,9 +42,8 @@ export class FindAllProductsDto {
   maxPrice?: number;
 
   @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  available?: boolean;
+  @IsString()
+  available?: string | boolean;
 
   @IsOptional()
   @Type(() => Number)

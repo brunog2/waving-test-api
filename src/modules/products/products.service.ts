@@ -15,9 +15,19 @@ export class ProductsService {
 
     const where: Prisma.ProductWhereInput = {};
 
+    if (filters.search) {
+      where.name = {
+        contains: filters.search,
+        mode: 'insensitive',
+      };
+    }
+
     if (filters.categoryId) where.categoryId = filters.categoryId;
 
-    if (filters.available !== undefined) where.available = filters.available;
+    if (filters.available !== undefined) {
+      where.available =
+        filters.available === 'true' || filters.available === true;
+    }
 
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
       where.price = {};
@@ -28,19 +38,19 @@ export class ProductsService {
     }
 
     // Configura a ordenação
-    const orderBy: Prisma.ProductOrderByWithRelationInput = {
-      available: 'desc',
-    };
+    const orderBy: Prisma.ProductOrderByWithRelationInput[] = [
+      { available: 'desc' },
+    ];
 
     switch (filters.sortBy) {
       case SortField.PRICE:
-        orderBy.price = filters.sortOrder;
+        orderBy.push({ price: filters.sortOrder });
         break;
       case SortField.NAME:
-        orderBy.name = filters.sortOrder;
+        orderBy.push({ name: filters.sortOrder });
         break;
       default:
-        orderBy.createdAt = filters.sortOrder;
+        orderBy.push({ createdAt: filters.sortOrder });
     }
 
     const [products, total] = await Promise.all([

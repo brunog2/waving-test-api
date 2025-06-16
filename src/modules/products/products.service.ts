@@ -2,7 +2,7 @@ import { Injectable, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { FindAllProductsDto, SortField } from './dto/find-all-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -27,6 +27,20 @@ export class ProductsService {
         where.price.lte = Number(filters.maxPrice);
     }
 
+    // Configura a ordenação
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {};
+
+    switch (filters.sortBy) {
+      case SortField.PRICE:
+        orderBy.price = filters.sortOrder;
+        break;
+      case SortField.NAME:
+        orderBy.name = filters.sortOrder;
+        break;
+      default:
+        orderBy.createdAt = filters.sortOrder;
+    }
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -35,9 +49,7 @@ export class ProductsService {
         include: {
           category: true,
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy,
       }),
       this.prisma.product.count({ where }),
     ]);
@@ -64,17 +76,6 @@ export class ProductsService {
       where: { id },
       include: {
         category: true,
-        comments: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
       },
     });
   }

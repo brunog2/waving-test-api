@@ -1,20 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Param,
   Body,
-  Request,
-  UseGuards,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
+import { CreateProductDto } from './dto/create-product.dto';
 import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
@@ -30,31 +32,28 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Request() req: AuthenticatedRequest, @Body() createDto: any) {
-    // Agora você tem acesso ao usuário autenticado via req.user
-    console.log('User authenticated:', req.user);
-    return this.productsService.create(createDto);
-  }
-
   @UseGuards(JwtAuthGuard, AdminGuard)
-  @Patch(':id')
-  async update(
-    @Request() req: AuthenticatedRequest,
-    @Param('id') id: string,
-    @Body() updateDto: any,
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @Req() req: AuthenticatedRequest,
   ) {
-    // Agora você tem acesso ao usuário autenticado via req.user
     console.log('User authenticated:', req.user);
-    return this.productsService.update(id, updateDto);
+    return this.productsService.create(createProductDto);
   }
 
+  @Patch(':id')
   @UseGuards(JwtAuthGuard, AdminGuard)
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productsService.update(id, updateProductDto);
+  }
+
   @Delete(':id')
-  async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
-    // Agora você tem acesso ao usuário autenticado via req.user
-    console.log('User authenticated:', req.user);
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
 }

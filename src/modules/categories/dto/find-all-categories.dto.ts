@@ -1,12 +1,4 @@
-import {
-  IsBoolean,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Min,
-  IsEnum,
-} from 'class-validator';
+import { IsNumber, IsOptional, Min, IsString, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum SortOrder {
@@ -15,33 +7,11 @@ export enum SortOrder {
 }
 
 export enum SortField {
-  PRICE = 'price',
   NAME = 'name',
   CREATED_AT = 'createdAt',
 }
 
-export class FindAllProductsDto {
-  @IsOptional()
-  @IsUUID()
-  categoryId?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  maxPrice?: number;
-
-  @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  available?: boolean;
-
+export class FindAllCategoriesDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -53,6 +23,10 @@ export class FindAllProductsDto {
   @IsNumber()
   @Min(1)
   limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 
   @IsOptional()
   @IsEnum(SortField)

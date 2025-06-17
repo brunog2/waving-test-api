@@ -24,7 +24,7 @@ API REST para sistema de e-commerce desenvolvida com NestJS, PostgreSQL e Prisma
 ### 1. Clone o repositório
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/brunog2/waving-test-api
 cd waving-test-api
 ```
 
@@ -40,13 +40,17 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 # Database
-DB_URL="postgresql://username:password@localhost:5432/wt?schema=public"
+DB_HOST=localhost
+DB_NAME=wt
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_PORT=5432
+DB_URL=postgresql://postgres:postgres@localhost:5432/wt?schema=public
 
 # JWT
-JWT_SECRET="sua-chave-secreta-aqui"
-JWT_EXPIRES_IN="24h"
+SECRET=sua-chave-secreta-aqui
 
-# App
+# API
 PORT=3000
 ```
 
@@ -178,22 +182,22 @@ Após executar o seed, você terá os seguintes usuários:
 ### Administrador
 
 - **Email:** adm@wt.com
-- **Senha:** 123456
+- **Senha:** 123
 - **Role:** ADMIN
 
 ### Cliente
 
 - **Email:** customer@wt.com
-- **Senha:** 123456
+- **Senha:** 123
 - **Role:** CUSTOMER
 
 ### Usuários para Avaliações
 
-- john@example.com / 123456
-- jane@example.com / 123456
-- mike@example.com / 123456
-- sarah@example.com / 123456
-- david@example.com / 123456
+- john@example.com / 123
+- jane@example.com / 123
+- mike@example.com / 123
+- sarah@example.com / 123
+- david@example.com / 123
 
 ## 🛠️ Estrutura do Projeto
 
@@ -218,9 +222,13 @@ src/
 
 ### Variáveis de Ambiente
 
-- `DB_URL`: URL de conexão com PostgreSQL
-- `JWT_SECRET`: Chave secreta para JWT
-- `JWT_EXPIRES_IN`: Tempo de expiração do JWT
+- `DB_HOST`: Host do banco de dados
+- `DB_NAME`: Nome do banco de dados
+- `DB_USER`: Usuário do banco de dados
+- `DB_PASSWORD`: Senha do banco de dados
+- `DB_PORT`: Porta do banco de dados
+- `DB_URL`: URL completa de conexão com PostgreSQL
+- `SECRET`: Chave secreta para JWT
 - `PORT`: Porta da aplicação
 
 ### Extensões PostgreSQL
@@ -267,14 +275,6 @@ npm install
 - Busca de produtos suporta normalização de acentos
 - Sistema de avaliações com ratings de 1-5 estrelas
 - Dashboard administrativo com estatísticas completas
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
 
 ## 📄 Licença
 

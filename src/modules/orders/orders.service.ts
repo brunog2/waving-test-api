@@ -219,4 +219,154 @@ export class OrdersService {
       where: { id },
     });
   }
+
+  async getDashboardStats() {
+    // Estatísticas gerais
+    const [totalSales, totalOrders] = await Promise.all([
+      this.prisma.order.aggregate({
+        _sum: {
+          total: true,
+        },
+        where: {
+          status: {
+            not: 'CANCELLED',
+          },
+        },
+      }),
+      this.prisma.order.count({
+        where: {
+          status: {
+            not: 'CANCELLED',
+          },
+        },
+      }),
+    ]);
+
+    // Pedidos por status
+    const ordersByStatus = await this.prisma.order.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    // Vendas por mês (últimos 12 meses)
+    const salesByMonth = await this.prisma.$queryRaw`
+      SELECT 
+        DATE_TRUNC('month', o."created_at") as month,
+        COUNT(o.id) as orders,
+        SUM(o.total) as revenue
+      FROM "orders" o
+      WHERE o.status != 'CANCELLED'
+        AND o."created_at" >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', o."created_at")
+      ORDER BY month ASC
+    `;
+
+    // Vendas por categoria
+    const salesByCategory = await this.prisma.$queryRaw`
+      SELECT 
+        c.name as category,
+        COUNT(DISTINCT o.id) as orders,
+        SUM(op.quantity) as totalQuantity,
+        SUM(op.quantity * op.price) as revenue
+      FROM "order_products" op
+      JOIN "products" p ON op."product_id" = p.id
+      JOIN "categories" c ON p."category_id" = c.id
+      JOIN "orders" o ON op."order_id" = o.id
+      WHERE o.status != 'CANCELLED'
+      GROUP BY c.id, c.name
+      ORDER BY revenue DESC
+    `;
+
+    // Vendas por dia (últimos 30 dias)
+    const salesByDay = await this.prisma.$queryRaw`
+      SELECT 
+        DATE(o."created_at") as day,
+        COUNT(o.id) as orders,
+        SUM(o.total) as revenue
+      FROM "orders" o
+      WHERE o.status != 'CANCELLED'
+        AND o."created_at" >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(o."created_at")
+      ORDER BY day ASC
+    `;
+
+    // Produtos mais vendidos
+    const topProducts = await this.prisma.$queryRaw`
+      SELECT 
+        op."product_id" as "productId",
+        p.name as "productName",
+        SUM(op.quantity) as "totalQuantity",
+        SUM(op.quantity * op.price) as "totalRevenue"
+      FROM "order_products" op
+      JOIN "products" p ON op."product_id" = p.id
+      JOIN "orders" o ON op."order_id" = o.id
+      WHERE o.status != 'CANCELLED'
+      GROUP BY op."product_id", p.name
+      ORDER BY "totalQuantity" DESC
+      LIMIT 10
+    `;
+
+    // Pedidos mais recentes
+    const recentOrders = await this.prisma.order.findMany({
+      select: {
+        id: true,
+        total: true,
+        status: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
+    });
+
+    // Calcular valor médio por pedido
+    const averageOrderValue =
+      totalOrders > 0 ? Number(totalSales._sum.total || 0) / totalOrders : 0;
+
+    // Formatar ordersByStatus
+    const formattedOrdersByStatus = ordersByStatus.reduce(
+      (acc, item) => {
+        acc[item.status] = item._count.status;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return {
+      totalSales: Number(totalSales._sum.total || 0),
+      totalOrders,
+      averageOrderValue: Number(averageOrderValue.toFixed(2)),
+      ordersByStatus: formattedOrdersByStatus,
+      // Dados para gráficos
+      salesByMonth: (salesByMonth as any[]).map((item: any) => ({
+        month: item.month,
+        orders: Number(item.orders),
+        revenue: Number(item.revenue || 0),
+      })),
+      salesByCategory: (salesByCategory as any[]).map((item: any) => ({
+        category: item.category,
+        orders: Number(item.orders),
+        totalQuantity: Number(item.totalquantity),
+        revenue: Number(item.revenue || 0),
+      })),
+      salesByDay: (salesByDay as any[]).map((item: any) => ({
+        day: item.day,
+        orders: Number(item.orders),
+        revenue: Number(item.revenue || 0),
+      })),
+      topProducts: (topProducts as any[]).map((item: any) => ({
+        productId: item.productId,
+        productName: item.productName,
+        totalQuantity: Number(item.totalQuantity),
+        totalRevenue: Number(item.totalRevenue || 0),
+      })),
+      recentOrders: recentOrders.map((order) => ({
+        ...order,
+        total: Number(order.total),
+      })),
+    };
+  }
 }

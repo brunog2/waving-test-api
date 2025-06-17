@@ -374,6 +374,9 @@ Cliente:
 A documentação completa está disponível em:
 **https://waving-test-api.fly.dev/api**
 
+🔗 **Documentação também disponível em:** [https://deepwiki.com/brunog2/waving-test-api](https://deepwiki.com/brunog2/waving-test-api)
+
+
 Inclui:
 - Todos os endpoints
 - Schemas de request/response

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '../../../enums/order-status.enum';
 
 export class FindAllOrdersDto {
   @ApiProperty({

@@ -39,21 +39,28 @@ COPY package.json package-lock.json* ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy the built application
+# Copy the built application and prisma files
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+# Generate Prisma client in production
+RUN npx prisma generate
+
+# Create startup script with LF endings
+RUN printf '#!/bin/sh\necho "Running Prisma migrations..."\nnpx prisma migrate deploy\necho "Running seeds..."\nnpx ts-node prisma/seed.ts\necho "Starting application..."\nexec node dist/src/main.js\n' > /app/start.sh && chmod +x /app/start.sh
 
 # Change ownership of the app directory to the nestjs user
 RUN chown -R nestjs:nodejs /app
 
 USER nestjs
 
-EXPOSE 8080
+EXPOSE 3000
 
-ENV PORT=8080
+ENV PORT=3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080/api', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "require('http').get('http://localhost:3000/api', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-CMD ["npm", "run", "start:prod"] 
+CMD ["/app/start.sh"] 

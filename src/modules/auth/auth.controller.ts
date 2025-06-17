@@ -49,27 +49,41 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        id: {
+        access_token: {
           type: 'string',
-          example: '123e4567-e89b-12d3-a456-426614174000',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
-        name: {
-          type: 'string',
-          example: 'João Silva',
-        },
-        email: {
-          type: 'string',
-          example: 'joao.silva@exemplo.com',
-        },
-        role: {
-          type: 'string',
-          enum: ['CUSTOMER'],
-          example: 'CUSTOMER',
-        },
-        createdAt: {
-          type: 'string',
-          format: 'date-time',
-          example: '2024-03-20T12:00:00Z',
+        user: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              example: '123e4567-e89b-12d3-a456-426614174000',
+            },
+            name: {
+              type: 'string',
+              example: 'João Silva',
+            },
+            email: {
+              type: 'string',
+              example: 'joao.silva@exemplo.com',
+            },
+            role: {
+              type: 'string',
+              enum: ['CUSTOMER'],
+              example: 'CUSTOMER',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-03-20T12:00:00Z',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-03-20T12:00:00Z',
+            },
+          },
         },
       },
     },

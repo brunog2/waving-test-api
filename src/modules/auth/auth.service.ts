@@ -33,6 +33,7 @@ export class AuthService {
   async login(user: UserInterface) {
     return {
       access_token: this.jwtService.sign({ sub: user.id, user }),
+      user,
     };
   }
 
@@ -58,8 +59,15 @@ export class AuthService {
       },
     });
 
-    const { password: _, ...result } = user;
-    return result;
+    const { password: _, ...userWithoutPassword } = user;
+
+    return {
+      access_token: this.jwtService.sign({
+        sub: user.id,
+        user: userWithoutPassword,
+      }),
+      user: userWithoutPassword,
+    };
   }
 
   async adminLogin(loginDto: LoginDto) {

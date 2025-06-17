@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { CartItemDto } from './dto/cart-item.dto';
+import { CartItemDto, CartItemsDto } from './dto/cart-item.dto';
 import { FindAllCartItemsDto } from './dto/find-all-cart-items.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CustomerGuard } from '../auth/guards/customer.guard';
@@ -50,6 +50,48 @@ export class CartController {
   @ApiResponse({
     status: 200,
     description: 'Lista de itens retornada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              quantity: { type: 'number' },
+              createdAt: { type: 'string' },
+              product: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  name: { type: 'string' },
+                  price: { type: 'number' },
+                  imageUrl: { type: 'string' },
+                  available: { type: 'boolean' },
+                },
+              },
+            },
+          },
+        },
+        meta: {
+          type: 'object',
+          properties: {
+            total: { type: 'number' },
+            page: { type: 'number' },
+            limit: { type: 'number' },
+            totalPages: { type: 'number' },
+            hasNextPage: { type: 'boolean' },
+            hasPreviousPage: { type: 'boolean' },
+            totalPrice: {
+              type: 'number',
+              description: 'Preço total de todos os itens no carrinho',
+              example: 1250.5,
+            },
+          },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
   @ApiResponse({
@@ -62,6 +104,31 @@ export class CartController {
     @Query() query: FindAllCartItemsDto,
   ) {
     return this.cartService.findAll(req.user.id, query);
+  }
+
+  @ApiOperation({ summary: 'Obter quantidade total de itens no carrinho' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quantidade total retornada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        totalItems: {
+          type: 'number',
+          example: 5,
+          description: 'Quantidade total de itens no carrinho',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
+  @Get('total')
+  getTotalItems(@Req() req: AuthenticatedRequest) {
+    return this.cartService.getTotalItems(req.user.id);
   }
 
   @ApiOperation({ summary: 'Adicionar item ao carrinho' })
@@ -78,6 +145,25 @@ export class CartController {
   @Post('items')
   addItem(@Req() req: AuthenticatedRequest, @Body() addItemDto: CartItemDto) {
     return this.cartService.addItem(req.user.id, addItemDto);
+  }
+
+  @ApiOperation({ summary: 'Adicionar múltiplos itens ao carrinho' })
+  @ApiResponse({ status: 201, description: 'Itens adicionados com sucesso' })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Um ou mais produtos não encontrados ou não disponíveis',
+  })
+  @Post('items/bulk')
+  addItems(
+    @Req() req: AuthenticatedRequest,
+    @Body() addItemsDto: CartItemsDto,
+  ) {
+    return this.cartService.addItems(req.user.id, addItemsDto);
   }
 
   @ApiOperation({ summary: 'Atualizar quantidade do item' })

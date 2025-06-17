@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -14,12 +15,15 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { FindAllCategoriesDto } from './dto/find-all-categories.dto';
 import { FindAllCategoriesWithProductsDto } from './dto/find-all-categories-with-products.dto';
 import { CategorySimpleDto } from './dto/category-select.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AdminGuard } from '../auth/guards/admin.guard';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 @ApiTags('categories')
@@ -79,7 +83,8 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Criar nova categoria' })
+  @ApiOperation({ summary: 'Criar nova categoria (apenas admin)' })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Categoria criada com sucesso',
@@ -88,12 +93,20 @@ export class CategoriesController {
     status: 400,
     description: 'Dados inválidos',
   })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Acesso negado - Apenas administradores podem acessar este recurso',
+  })
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Atualizar categoria' })
+  @ApiOperation({ summary: 'Atualizar categoria (apenas admin)' })
+  @ApiBearerAuth()
   @ApiParam({
     name: 'id',
     description: 'ID da categoria',
@@ -107,6 +120,13 @@ export class CategoriesController {
     status: 404,
     description: 'Categoria não encontrada',
   })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Acesso negado - Apenas administradores podem acessar este recurso',
+  })
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -115,7 +135,8 @@ export class CategoriesController {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Remover categoria' })
+  @ApiOperation({ summary: 'Remover categoria (apenas admin)' })
+  @ApiBearerAuth()
   @ApiParam({
     name: 'id',
     description: 'ID da categoria',
@@ -129,6 +150,13 @@ export class CategoriesController {
     status: 404,
     description: 'Categoria não encontrada',
   })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Acesso negado - Apenas administradores podem acessar este recurso',
+  })
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);

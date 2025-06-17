@@ -28,6 +28,15 @@ export class AuthController {
           type: 'string',
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
+        user: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string' },
+            role: { type: 'string' },
+          },
+        },
       },
     },
   })
@@ -108,6 +117,15 @@ export class AuthController {
         access_token: {
           type: 'string',
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
+        user: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string' },
+            role: { type: 'string' },
+          },
         },
       },
     },

@@ -12,6 +12,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
@@ -24,7 +25,21 @@ import { FindAllCommentsDto } from './dto/find-all-comments.dto';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @ApiOperation({ summary: 'Listar comentários' })
+  @ApiOperation({ summary: 'Listar comentários de um produto' })
+  @ApiQuery({
+    name: 'productId',
+    description: 'ID do produto',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de comentários retornada com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'ID do produto é obrigatório',
+  })
   @Get()
   findAll(@Query() query: FindAllCommentsDto) {
     if (!query.productId) {
@@ -35,6 +50,14 @@ export class CommentsController {
 
   @ApiOperation({ summary: 'Criar novo comentário' })
   @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    description: 'Comentário criado com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos',
+  })
   @ApiResponse({
     status: 401,
     description: 'Não autorizado',

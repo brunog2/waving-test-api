@@ -19,7 +19,7 @@ Este guia explica como fazer o deploy da API NestJS no Fly.io.
 3. **Configurar variáveis de ambiente**:
    Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
    ```env
-   DB_URL=your-postgresql-database-url
+   DATABASE_URL=your-postgresql-database-url
    JWT_SECRET=your-jwt-secret
    PORT=8080
    NODE_ENV=production
@@ -54,7 +54,7 @@ Se preferir fazer o deploy manualmente:
 2. **Configurar variáveis de ambiente**:
 
    ```bash
-   fly secrets set DB_URL="your-database-url" --app waving-test-api
+   fly secrets set DATABASE_URL="your-database-url" --app waving-test-api
    fly secrets set JWT_SECRET="your-jwt-secret" --app waving-test-api
    ```
 
@@ -152,7 +152,7 @@ Para usar um banco PostgreSQL no Fly.io:
 
 1. **Erro de conexão com banco**:
 
-   - Verifique se a variável `DB_URL` está configurada
+   - Verifique se a variável `DATABASE_URL` está configurada
    - Confirme se o banco está acessível
 
 2. **Erro de build**:

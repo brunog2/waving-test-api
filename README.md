@@ -45,7 +45,7 @@ DB_NAME=wt
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_PORT=5432
-DB_URL=postgresql://postgres:postgres@localhost:5432/wt?schema=public
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/wt?schema=public
 
 # JWT
 SECRET=sua-chave-secreta-aqui
@@ -227,7 +227,7 @@ src/
 - `DB_USER`: Usuário do banco de dados
 - `DB_PASSWORD`: Senha do banco de dados
 - `DB_PORT`: Porta do banco de dados
-- `DB_URL`: URL completa de conexão com PostgreSQL
+- `DATABASE_URL`: URL completa de conexão com PostgreSQL
 - `SECRET`: Chave secreta para JWT
 - `PORT`: Porta da aplicação
 

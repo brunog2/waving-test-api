@@ -40,5 +40,5 @@ primary_region = "gru"
 
 # Uncomment the section below if you need to set environment variables
 # [env]
-#   DB_URL = "your-database-url-here"
+#   DATABASE_URL = "your-database-url-here"
 #   JWT_SECRET = "your-jwt-secret-here" 

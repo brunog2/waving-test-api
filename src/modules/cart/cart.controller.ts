@@ -205,4 +205,33 @@ export class CartController {
   removeItem(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.cartService.removeItem(req.user.id, id);
   }
+
+  @ApiOperation({ summary: 'Limpar todo o carrinho' })
+  @ApiResponse({
+    status: 200,
+    description: 'Carrinho limpo com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Carrinho limpo com sucesso',
+        },
+        deletedCount: {
+          type: 'number',
+          example: 3,
+          description: 'Quantidade de itens removidos',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - Apenas clientes podem acessar este recurso',
+  })
+  @Delete()
+  clearCart(@Req() req: AuthenticatedRequest) {
+    return this.cartService.clearCart(req.user.id);
+  }
 }

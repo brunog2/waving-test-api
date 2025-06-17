@@ -266,4 +266,15 @@ export class CartService {
       totalItems: result._sum.quantity || 0,
     };
   }
+
+  async clearCart(userId: string) {
+    const deletedItems = await this.prisma.cartProduct.deleteMany({
+      where: { userId },
+    });
+
+    return {
+      message: 'Carrinho limpo com sucesso',
+      deletedCount: deletedItems.count,
+    };
+  }
 }

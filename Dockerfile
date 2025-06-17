@@ -23,6 +23,9 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
+# Compilar o seed para JS
+RUN npx tsc prisma/seed.ts --outDir dist/prisma --target ES2020 --module CommonJS
+
 # Production image, copy all the files and run the app
 FROM base AS runner
 WORKDIR /app
@@ -48,7 +51,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 RUN npx prisma generate
 
 # Create startup script with LF endings
-RUN printf '#!/bin/sh\necho "Running Prisma migrations..."\nnpx prisma migrate deploy\necho "Running seeds..."\nnpx ts-node prisma/seed.ts\necho "Starting application..."\nexec node dist/src/main.js\n' > /app/start.sh && chmod +x /app/start.sh
+RUN printf '#!/bin/sh\necho "Running Prisma migrations..."\nnpx prisma migrate deploy\necho "Running seeds..."\nnode dist/prisma/seed.js\necho "Starting application..."\nexec node dist/src/main.js\n' > /app/start.sh && chmod +x /app/start.sh
 
 # Change ownership of the app directory to the nestjs user
 RUN chown -R nestjs:nodejs /app

@@ -1,98 +1,285 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛍️ Waving Test API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para sistema de e-commerce desenvolvida com NestJS, PostgreSQL e Prisma.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tecnologias
 
-## Description
+- **Backend:** NestJS
+- **Banco de Dados:** PostgreSQL
+- **ORM:** Prisma
+- **Autenticação:** JWT
+- **Documentação:** Swagger/OpenAPI
+- **Validação:** class-validator
+- **Criptografia:** bcrypt
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Pré-requisitos
 
-## Project setup
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+- PostgreSQL
+- Docker (opcional, para rodar PostgreSQL)
+
+## 🛠️ Instalação
+
+### 1. Clone o repositório
 
 ```bash
-$ npm install
+git clone <url-do-repositorio>
+cd waving-test-api
 ```
 
-## Compile and run the project
+### 2. Instale as dependências
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### 3. Configure as variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Database
+DB_URL="postgresql://username:password@localhost:5432/wt?schema=public"
+
+# JWT
+JWT_SECRET="sua-chave-secreta-aqui"
+JWT_EXPIRES_IN="24h"
+
+# App
+PORT=3000
+```
+
+### 4. Configure o banco de dados
+
+#### Opção A: Usando Docker (Recomendado)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Inicia o PostgreSQL
+docker compose -f docker-compose-dev.yml up -d
 ```
 
-## Deployment
+#### Opção B: PostgreSQL local
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Certifique-se de que o PostgreSQL está rodando e crie um banco de dados chamado `wt`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🗄️ Configuração do Banco de Dados
+
+### 1. Gere o Prisma Client
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. Execute as migrações
 
-## Resources
+```bash
+npx prisma migrate dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 3. Popule o banco com dados de exemplo
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run prisma:seed
+```
 
-## Support
+## 🚀 Como Executar
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Desenvolvimento
 
-## Stay in touch
+```bash
+# Modo desenvolvimento com watch
+npm run start:dev
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Ou com serviços Docker
+npm run start:services
+```
 
-## License
+### Produção
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# Build do projeto
+npm run build
+
+# Executar em produção
+npm run start:prod
+```
+
+## 📚 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run start:dev          # Executa em modo desenvolvimento com watch
+npm run start:services     # Executa com Docker + desenvolvimento
+npm run start:debug        # Executa em modo debug
+
+# Produção
+npm run build              # Compila o projeto
+npm run start:prod         # Executa em produção
+
+# Testes
+npm run test               # Executa testes unitários
+npm run test:watch         # Executa testes em modo watch
+npm run test:e2e           # Executa testes end-to-end
+npm run test:cov           # Executa testes com cobertura
+
+# Qualidade de código
+npm run lint               # Executa ESLint
+npm run format             # Formata código com Prettier
+
+# Banco de dados
+npm run prisma:seed        # Popula banco com dados de exemplo
+npm run db:reset           # Reseta banco, migrações e dados
+npm run db:migrate         # Executa migrações em desenvolvimento
+npm run db:deploy          # Executa migrações em produção
+npm run db:studio          # Abre Prisma Studio
+npm run db:generate        # Gera Prisma Client
+npm run db:push            # Sincroniza schema com banco
+npm run db:pull            # Puxa schema do banco
+```
+
+## 🗄️ Comandos do Prisma
+
+```bash
+# Gerar Prisma Client
+npx prisma generate
+
+# Criar nova migração
+npx prisma migrate dev --name nome-da-migracao
+
+# Aplicar migrações em produção
+npx prisma migrate deploy
+
+# Resetar banco de dados
+npx prisma migrate reset
+
+# Abrir Prisma Studio (interface visual)
+npx prisma studio
+
+# Verificar status do banco
+npx prisma db pull
+
+# Gerar schema a partir do banco
+npx prisma db push
+```
+
+## 📖 Documentação da API
+
+Após iniciar o servidor, acesse a documentação Swagger:
+
+```
+http://localhost:3000/api
+```
+
+## 🔐 Usuários de Teste
+
+Após executar o seed, você terá os seguintes usuários:
+
+### Administrador
+
+- **Email:** adm@wt.com
+- **Senha:** 123456
+- **Role:** ADMIN
+
+### Cliente
+
+- **Email:** customer@wt.com
+- **Senha:** 123456
+- **Role:** CUSTOMER
+
+### Usuários para Avaliações
+
+- john@example.com / 123456
+- jane@example.com / 123456
+- mike@example.com / 123456
+- sarah@example.com / 123456
+- david@example.com / 123456
+
+## 🛠️ Estrutura do Projeto
+
+```
+src/
+├── modules/
+│   ├── auth/           # Autenticação e autorização
+│   ├── users/          # Gerenciamento de usuários
+│   ├── categories/     # Categorias de produtos
+│   ├── products/       # Produtos
+│   ├── comments/       # Comentários e avaliações
+│   ├── cart/           # Carrinho de compras
+│   └── orders/         # Pedidos
+├── prisma/
+│   ├── schema.prisma   # Schema do banco de dados
+│   ├── seed.ts         # Dados de exemplo
+│   └── migrations/     # Migrações do banco
+└── config/             # Configurações da aplicação
+```
+
+## 🔧 Configurações Importantes
+
+### Variáveis de Ambiente
+
+- `DB_URL`: URL de conexão com PostgreSQL
+- `JWT_SECRET`: Chave secreta para JWT
+- `JWT_EXPIRES_IN`: Tempo de expiração do JWT
+- `PORT`: Porta da aplicação
+
+### Extensões PostgreSQL
+
+O projeto utiliza a extensão `unaccent` para busca sem acentos. A migração é aplicada automaticamente.
+
+## 🚨 Troubleshooting
+
+### Problemas com Prisma
+
+```bash
+# Se houver problemas com o Prisma Client
+npx prisma generate
+
+# Se houver problemas com migrações
+npx prisma migrate reset --force
+```
+
+### Problemas com Docker
+
+```bash
+# Parar containers
+docker compose -f docker-compose-dev.yml down
+
+# Remover volumes (cuidado: apaga dados)
+docker compose -f docker-compose-dev.yml down -v
+```
+
+### Problemas com dependências
+
+```bash
+# Limpar cache do npm
+npm cache clean --force
+
+# Remover node_modules e reinstalar
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## 📝 Notas de Desenvolvimento
+
+- A API utiliza soft delete (não remove registros permanentemente)
+- Todas as operações críticas usam transações de banco
+- Busca de produtos suporta normalização de acentos
+- Sistema de avaliações com ratings de 1-5 estrelas
+- Dashboard administrativo com estatísticas completas
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+**Desenvolvido com ❤️ usando NestJS**

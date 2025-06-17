@@ -61,6 +61,43 @@ export class ProductsService {
     if (filters.search) {
       // Use raw query with unaccent for search
       const sortOrder = filters.sortOrder || 'desc';
+
+      // Construir parâmetros dinamicamente
+      const queryParams: (string | number)[] = [`%${filters.search}%`];
+      let paramIndex = 2;
+
+      const buildWhereClause = () => {
+        let whereClause = 'WHERE unaccent(p.name) ILIKE unaccent($1)';
+
+        if (filters.categoryId) {
+          whereClause += ` AND p."category_id" = $${paramIndex}`;
+          queryParams.push(filters.categoryId);
+          paramIndex++;
+        }
+
+        if (filters.available !== undefined) {
+          whereClause += ` AND p.available = $${paramIndex}`;
+          queryParams.push(String(filters.available));
+          paramIndex++;
+        }
+
+        if (filters.minPrice !== undefined) {
+          whereClause += ` AND p.price >= $${paramIndex}`;
+          queryParams.push(Number(filters.minPrice));
+          paramIndex++;
+        }
+
+        if (filters.maxPrice !== undefined) {
+          whereClause += ` AND p.price <= $${paramIndex}`;
+          queryParams.push(Number(filters.maxPrice));
+          paramIndex++;
+        }
+
+        return whereClause;
+      };
+
+      const whereClause = buildWhereClause();
+
       const searchQuery = `
         SELECT 
           p.id,
@@ -81,11 +118,7 @@ export class ProductsService {
           c."deleted_at" as "category.deletedAt"
         FROM "products" p
         LEFT JOIN "categories" c ON p."category_id" = c.id
-        WHERE unaccent(p.name) ILIKE unaccent($1)
-        ${filters.categoryId ? 'AND p."category_id" = $2' : ''}
-        ${filters.available !== undefined ? 'AND p.available = $' + (filters.categoryId ? '3' : '2') : ''}
-        ${filters.minPrice !== undefined ? 'AND p.price >= $' + (filters.categoryId ? '4' : '3') : ''}
-        ${filters.maxPrice !== undefined ? 'AND p.price <= $' + (filters.categoryId ? '5' : '4') : ''}
+        ${whereClause}
         ORDER BY p.available DESC, p."created_at" ${sortOrder}
         LIMIT ${limit}
         OFFSET ${skip}
@@ -94,21 +127,8 @@ export class ProductsService {
       const countQuery = `
         SELECT COUNT(*)
         FROM "products" p
-        WHERE unaccent(p.name) ILIKE unaccent($1)
-        ${filters.categoryId ? 'AND p."category_id" = $2' : ''}
-        ${filters.available !== undefined ? 'AND p.available = $' + (filters.categoryId ? '3' : '2') : ''}
-        ${filters.minPrice !== undefined ? 'AND p.price >= $' + (filters.categoryId ? '4' : '3') : ''}
-        ${filters.maxPrice !== undefined ? 'AND p.price <= $' + (filters.categoryId ? '5' : '4') : ''}
+        ${whereClause}
       `;
-
-      const queryParams = [`%${filters.search}%`];
-      if (filters.categoryId) queryParams.push(filters.categoryId);
-      if (filters.available !== undefined)
-        queryParams.push(String(filters.available));
-      if (filters.minPrice !== undefined)
-        queryParams.push(String(filters.minPrice));
-      if (filters.maxPrice !== undefined)
-        queryParams.push(String(filters.maxPrice));
 
       try {
         [products, total] = await Promise.all([
